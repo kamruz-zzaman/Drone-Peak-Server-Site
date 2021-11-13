@@ -19,10 +19,18 @@ async function run() {
         await client.connect();
         const database = client.db("DronePeak");
         const packagesCollection = database.collection("Drone");
+
         // get all the drones packages
         app.get('/drones', async (req, res) => {
             const cursor = packagesCollection.find({});
             const package = await cursor.toArray();
+            res.send(package);
+        });
+        // get one drones packacges by id
+        app.get('/drones/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const package = await packagesCollection.findOne(query);
             res.send(package);
         });
     } finally {
