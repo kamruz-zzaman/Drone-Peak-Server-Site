@@ -19,6 +19,8 @@ async function run() {
         await client.connect();
         const database = client.db("DronePeak");
         const packagesCollection = database.collection("Drone");
+        const orderCollection = database.collection("Order");
+        const ratingCollection = database.collection("Rating");
 
         // get all the drones packages
         app.get('/drones', async (req, res) => {
@@ -26,12 +28,38 @@ async function run() {
             const package = await cursor.toArray();
             res.send(package);
         });
+        // Upload or post a package
+        app.post('/drones', async (req, res) => {
+            const data = req.body;
+            const package = await packagesCollection.insertOne(data);
+            res.send(package);
+        });
+
         // get one drones packacges by id
         app.get('/drones/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const package = await packagesCollection.findOne(query);
             res.send(package);
+        });
+        // post or upload orderInfo
+        app.post('/order', async (req, res) => {
+            const data = req.body;
+            const order = await orderCollection.insertOne(data);
+            res.send(order);
+        });
+
+        // get orderInfo 
+        app.get('/order', async (req, res) => {
+            const cursor = orderCollection.find({});
+            const order = await cursor.toArray();
+            res.send(order);
+        });
+        // updload rating
+        app.post('/rating', async (req, res) => {
+            const data = req.body;
+            const rating = await ratingCollection.insertOne(data);
+            res.send(rating);
         });
     } finally {
         // await client.close();
